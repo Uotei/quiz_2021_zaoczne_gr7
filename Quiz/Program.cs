@@ -9,7 +9,17 @@ namespace Quiz
             PokazEkranPowitalny();
             Gra gra = new Gra();
             Pytanie p1 = gra.WylosujPytanie();
-            Pytanie p2 = gra.WylosujPytanie();
+            string odpGracza = PokazPytanieGraczowi(p1);
+            
+            if (odpGracza == "1")
+            {
+                DobraOdpowiedz(p1);
+            }
+            else
+            {
+                KoniecGry();
+            }
+
 
 
 
@@ -35,6 +45,49 @@ namespace Quiz
             Console.Write("Naciśnij klawisz ENTER / RETURN, aby rozpocząć grę ...");
             Console.ReadKey();
             Console.WriteLine();
+        }
+
+
+
+
+
+
+        static string PokazPytanieGraczowi(Pytanie pytanie)
+        {
+            Console.Clear();
+            Console.WriteLine();
+            //Console.WriteLine("Pytanie za " + pytanie.Kategoria + " pkt.");
+            Console.WriteLine($"Pytanie za {pytanie.Kategoria} pkt.");
+            Console.WriteLine();
+            Console.WriteLine(pytanie.Tresc);
+            Console.WriteLine();
+            foreach (Odpowiedz odp in pytanie.Odpowiedzi)
+            {
+                Console.WriteLine($"{odp.Id}. {odp.Tresc}");
+            }
+
+            Console.WriteLine();
+            Console.Write("Proszę podać numer odpowiedzi: ");
+            return Console.ReadLine();
+        }
+
+
+        static void DobraOdpowiedz(Pytanie pytanie)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Brawo !!! Dobra odpowiedź.");
+            Console.WriteLine();
+            Console.WriteLine($"Wygrywasz {pytanie.Kategoria} pkt.");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        static void KoniecGry()
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Niestety, to zła odpowiedź");
+            Console.WriteLine();
+            Console.WriteLine("K O N I E C   G R Y !!!!");
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
     }
