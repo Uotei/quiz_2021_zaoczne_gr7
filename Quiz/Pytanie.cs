@@ -8,8 +8,6 @@ namespace Quiz
 {
     class Pytanie
     {
-        
-
         public int Id { get; set; }
         public string Tresc { get; set; }
         public int Kategoria { get; set; }
