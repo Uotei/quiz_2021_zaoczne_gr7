@@ -12,11 +12,14 @@ namespace Quiz
     {
         public int BiezacaKategoriaPytania { get; set; }
         public List<Pytanie> WszystkiePytania { get; set; }
+        public List<int> KategoriePytan { get; set; }
+        public int IndeksKategorii { get; set; }
 
         public Gra()
-        {
-            BiezacaKategoriaPytania = 500;
+        {         
             StworzBazePytan();
+            StworzListeKategorii();
+            BiezacaKategoriaPytania = KategoriePytan[IndeksKategorii];
         }
 
         public void StworzBazePytan()
@@ -40,14 +43,36 @@ namespace Quiz
             }
         }
 
+        public void StworzListeKategorii()
+        {
+            // Select => tworzy nową listę o takiej samej długości z wybranymi właściwościami
+            // Distinct => elimunuje z listy duplikaty
+            KategoriePytan = WszystkiePytania.Select(p => p.Kategoria).Distinct().OrderBy(o => o).ToList();
+        }
+
         public Pytanie WylosujPytanie()
         {
             // 1. musimy wyfiltrować WszystkiePytania żeby zostały tylko pytania z BiezącejKategorii
             List<Pytanie> pytaniaZBiezacejKategorii = WszystkiePytania.Where(p => p.Kategoria == BiezacaKategoriaPytania).ToList();
 
             // 2. wylosować jakiś element tej kolekcji => DO ZROBIENIA
-            int liczbaLosowa = 2;
-            return pytaniaZBiezacejKategorii[liczbaLosowa - 1];
+            int liczbaLosowa = Randomizer.Randomizer.GenarateRandomNumber(pytaniaZBiezacejKategorii.Count);
+
+            var pytanie = pytaniaZBiezacejKategorii[liczbaLosowa - 1];
+
+            // 3. Losujemy kolejność odpowiedzi na pytanie
+            List<int> losoweCzteryLiczby = Randomizer.Randomizer
+                .ListOfRandomNumbers(pytanie.Odpowiedzi.Count, pytanie.Odpowiedzi.Count);
+
+            for (int idx = 0; idx < pytanie.Odpowiedzi.Count; idx++)
+            {
+                pytanie.Odpowiedzi[idx].Kolejnosc = losoweCzteryLiczby[idx];
+            }
+
+            // OrderBy
+            // OrderByDescending
+            pytanie.Odpowiedzi = pytanie.Odpowiedzi.OrderBy(p => p.Kolejnosc).ToList();
+            return pytanie;
 
 
             // PRZYDATNE METODY LISTY (KOLEKCJI)
@@ -65,9 +90,18 @@ namespace Quiz
             //int numerek3 = numerki.Max();
             //int numerek4 = numerki.Sum();
             //var test = numerki.Average();
-
-
         }
 
+        public bool PrzejdzDoNastepnejKategorii()
+        {
+            IndeksKategorii++;
+            if (IndeksKategorii <= KategoriePytan.Count - 1)
+            {
+                BiezacaKategoriaPytania = KategoriePytan[IndeksKategorii];
+                return true;
+            }
+            else
+                return false;    
+        }
     }
 }

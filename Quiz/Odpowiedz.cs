@@ -11,5 +11,6 @@ namespace Quiz
         public int Id { get; set; }
         public string Tresc { get; set; }
         public bool CzyPrawidlowa { get; set; }
+        public int Kolejnosc { get; set; }
     }
 }

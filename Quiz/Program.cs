@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Quiz
 {
@@ -8,24 +9,90 @@ namespace Quiz
         {
             PokazEkranPowitalny();
             Gra gra = new Gra();
-            Pytanie p1 = gra.WylosujPytanie();
-            string odpGracza = PokazPytanieGraczowi(p1);
-            
-            if (odpGracza == "1")
+
+            // Wersja 1
+            //bool czyGraczOdpowiadaPrawidlowo = true;
+            //while (czyGraczOdpowiadaPrawidlowo)
+            //{
+            //    Pytanie p = gra.WylosujPytanie();
+            //    string odpGracza = PokazPytanieGraczowi(p);
+            //    // gracz podajne Kolejnosc odpowiedzi (on o tym nie wiem ale my wiemy)
+            //    // wiemy która odpowiedz jest prawidlowa (CzyPrawidlowa)
+            //    int odpowiedzGraczaJakoLiczba = int.Parse(odpGracza);
+            //    var wybranaOdpowiedz = p.Odpowiedzi.FirstOrDefault(o => o.Kolejnosc == odpowiedzGraczaJakoLiczba);
+            //    if (wybranaOdpowiedz.CzyPrawidlowa)
+            //    {
+            //        DobraOdpowiedz(p);
+            //        // przejscie do wyższej kategorii
+            //        gra.PrzejdzDoNastepnejKategorii();
+            //    }
+            //    else
+            //    {
+            //        KoniecGry();
+            //        czyGraczOdpowiadaPrawidlowo = false;
+            //    }
+            //}
+
+            // Wersja 2
+            //bool czyGraczOdpowiadaPrawidlowo = true;
+            //do
+            //{
+            //    Pytanie p = gra.WylosujPytanie();
+            //    string odpGracza = PokazPytanieGraczowi(p);
+            //    // gracz podajne Kolejnosc odpowiedzi (on o tym nie wiem ale my wiemy)
+            //    // wiemy która odpowiedz jest prawidlowa (CzyPrawidlowa)
+            //    int odpowiedzGraczaJakoLiczba = int.Parse(odpGracza);
+            //    var wybranaOdpowiedz = p.Odpowiedzi.FirstOrDefault(o => o.Kolejnosc == odpowiedzGraczaJakoLiczba);
+            //    if (wybranaOdpowiedz.CzyPrawidlowa)
+            //    {
+            //        DobraOdpowiedz(p);
+            //        // przejscie do wyższej kategorii
+            //        gra.PrzejdzDoNastepnejKategorii();
+            //    }
+            //    else
+            //    {
+            //        KoniecGry();
+            //        czyGraczOdpowiadaPrawidlowo = false;
+            //    }
+            //}
+            //while (czyGraczOdpowiadaPrawidlowo);
+
+            while (true)
             {
-                DobraOdpowiedz(p1);
+                Pytanie p = gra.WylosujPytanie();
+                string odpGracza = PokazPytanieGraczowi(p);
+                // gracz podajne Kolejnosc odpowiedzi (on o tym nie wiem ale my wiemy)
+                // wiemy która odpowiedz jest prawidlowa (CzyPrawidlowa)
+                int odpowiedzGraczaJakoLiczba = int.Parse(odpGracza);
+                var wybranaOdpowiedz = p.Odpowiedzi.FirstOrDefault(o => o.Kolejnosc == odpowiedzGraczaJakoLiczba);
+                if (wybranaOdpowiedz.CzyPrawidlowa)
+                {
+                    DobraOdpowiedz(p);
+                    // przejscie do wyższej kategorii
+                    if (!gra.PrzejdzDoNastepnejKategorii())
+                    {
+                        Wygrana();
+                        return;
+                    }
+                }
+                else
+                {
+                    KoniecGry();
+                    return;
+                }
             }
-            else
-            {
-                KoniecGry();
-            }
-
-
-
 
             Console.ReadLine();
         }
 
+        static void Wygrana()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Brawo !!! Ukończyłaś/eś QUIZ WYGRYWASZ 1000 pkt.");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.ReadLine();
+        }
 
         static void PokazEkranPowitalny()
         {
@@ -63,26 +130,29 @@ namespace Quiz
             Console.WriteLine();
             foreach (Odpowiedz odp in pytanie.Odpowiedzi)
             {
-                Console.WriteLine($"{odp.Id}. {odp.Tresc}");
+                Console.WriteLine($"{odp.Kolejnosc}. {odp.Tresc}");
             }
 
             Console.WriteLine();
-            Console.Write("Proszę podać numer odpowiedzi: ");
+            Console.Write("Proszę wpisać 1, 2, 3 lub 4: ");
             return Console.ReadLine();
         }
 
 
         static void DobraOdpowiedz(Pytanie pytanie)
         {
+            Console.Clear();
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Brawo !!! Dobra odpowiedź.");
             Console.WriteLine();
             Console.WriteLine($"Wygrywasz {pytanie.Kategoria} pkt.");
             Console.ForegroundColor = ConsoleColor.White;
+            Console.ReadLine();
         }
 
         static void KoniecGry()
         {
+            Console.Clear();
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Niestety, to zła odpowiedź");
             Console.WriteLine();
