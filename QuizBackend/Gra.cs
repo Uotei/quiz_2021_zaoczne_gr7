@@ -6,14 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Quiz
+namespace QuizBackend
 {
-    class Gra
+    public class Gra
     {
         public int BiezacaKategoriaPytania { get; set; }
         public List<Pytanie> WszystkiePytania { get; set; }
         public List<int> KategoriePytan { get; set; }
         public int IndeksKategorii { get; set; }
+        public Pytanie AktualnePytanie { get; set; }
 
         public Gra()
         {         
@@ -50,17 +51,11 @@ namespace Quiz
             KategoriePytan = WszystkiePytania.Select(p => p.Kategoria).Distinct().OrderBy(o => o).ToList();
         }
 
-        public Pytanie WylosujPytanie()
-        {
-            // 1. musimy wyfiltrować WszystkiePytania żeby zostały tylko pytania z BiezącejKategorii
-            List<Pytanie> pytaniaZBiezacejKategorii = WszystkiePytania.Where(p => p.Kategoria == BiezacaKategoriaPytania).ToList();
-
-            // 2. wylosować jakiś element tej kolekcji => DO ZROBIENIA
+        public void WylosujPytanie()
+        {         
+            List<Pytanie> pytaniaZBiezacejKategorii = WszystkiePytania.Where(p => p.Kategoria == BiezacaKategoriaPytania).ToList();        
             int liczbaLosowa = Randomizer.Randomizer.GenarateRandomNumber(pytaniaZBiezacejKategorii.Count);
-
             var pytanie = pytaniaZBiezacejKategorii[liczbaLosowa - 1];
-
-            // 3. Losujemy kolejność odpowiedzi na pytanie
             List<int> losoweCzteryLiczby = Randomizer.Randomizer
                 .ListOfRandomNumbers(pytanie.Odpowiedzi.Count, pytanie.Odpowiedzi.Count);
 
@@ -69,27 +64,8 @@ namespace Quiz
                 pytanie.Odpowiedzi[idx].Kolejnosc = losoweCzteryLiczby[idx];
             }
 
-            // OrderBy
-            // OrderByDescending
             pytanie.Odpowiedzi = pytanie.Odpowiedzi.OrderBy(p => p.Kolejnosc).ToList();
-            return pytanie;
-
-
-            // PRZYDATNE METODY LISTY (KOLEKCJI)
-            //List<int> numerki = new List<int>();
-            //numerki.Add(10);
-            //numerki.Add(3);
-            //numerki.Add(4);
-            //numerki.Add(6);
-            //numerki.Add(11);
-
-            ////// WYRAŻENIE LAMBDA =>
-            //int numerek1 = numerki.First();
-            //var numerek2 = numerki.FirstOrDefault(x => x < 10);
-            //List<int> mojeNumerki = numerki.Where(x => x >= 10).ToList();
-            //int numerek3 = numerki.Max();
-            //int numerek4 = numerki.Sum();
-            //var test = numerki.Average();
+            AktualnePytanie = pytanie;
         }
 
         public bool PrzejdzDoNastepnejKategorii()
@@ -102,6 +78,11 @@ namespace Quiz
             }
             else
                 return false;    
+        }
+
+        public bool CzyPrawidlowaOspowiedz(int odpowiedzGracza)
+        {
+            return AktualnePytanie.Odpowiedzi.FirstOrDefault(o => o.Kolejnosc == odpowiedzGracza).CzyPrawidlowa;
         }
     }
 }

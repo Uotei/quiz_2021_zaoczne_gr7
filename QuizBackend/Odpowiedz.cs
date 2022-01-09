@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Quiz
+namespace QuizBackend
 {
-    class Odpowiedz
+    public class Odpowiedz
     {
         public int Id { get; set; }
         public string Tresc { get; set; }
